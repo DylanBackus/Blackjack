@@ -2,9 +2,9 @@
 
 namespace Blackjack
 {
-    public class Program
+    internal class StartGame
     {
-        public static void Main(string[] args)
+        public void Begin()
         {
             BlackjackGame game = new BlackjackGame();
             game.Start();
