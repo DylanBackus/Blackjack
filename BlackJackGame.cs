@@ -11,7 +11,7 @@ namespace Blackjack
         {
             bool isValidInput;
 
-            // Initialisatie van het deck
+            // Initialisatie van het decks
             deck = new Deck();
             deck.InitializeDeck();
             deck.ShuffleDeck();
