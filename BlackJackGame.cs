@@ -11,16 +11,11 @@ namespace Blackjack
         {
             bool isValidInput;
 
-            // Initialisatie van het decks
-            deck = new Deck();
-            deck.InitializeDeck();
-            deck.ShuffleDeck();
-
             do
             {
                 Console.WriteLine();
                 Console.WriteLine("How many players do you want to play against? (1-7)");
-                string? playerAmountInput = Console.ReadLine();
+                string playerAmountInput = Console.ReadLine();
 
                 isValidInput = ValidatePlayerAmountInput(playerAmountInput);
 
@@ -28,9 +23,18 @@ namespace Blackjack
 
             Console.WriteLine();
             Console.WriteLine("You are playing against " + playerAmount + " players");
+            Console.WriteLine();
+
+            // Print het geschudde deck
+
+            deck = new Deck(); // Nieuw deck
+            deck.InitializeDeck(); // Initialiseren
+            deck.ShuffleDeck(); // Schudden
+            Console.WriteLine("Shuffled deck:");
+            deck.PrintDeck();
         }
 
-        private bool ValidatePlayerAmountInput(string? input)
+        private bool ValidatePlayerAmountInput(string input)
         {
             if (int.TryParse(input, out playerAmount))
             {
@@ -51,6 +55,7 @@ namespace Blackjack
                 Console.WriteLine("Please enter a valid number.");
                 Console.ResetColor();
             }
+
             return false;
         }
     }

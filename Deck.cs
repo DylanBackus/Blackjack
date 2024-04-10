@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Blackjack
 {
-    internal class Deck
+    public class Deck
     {
-        public string[] DeckArray { get; private set; }
+        private string[] DeckArray { get; set; }
 
         public void InitializeDeck()
         {
@@ -38,6 +38,14 @@ namespace Blackjack
                 DeckArray[length] = value;
             }
             Console.WriteLine("Deck has been shuffled.");
+        }
+
+        public void PrintDeck()
+        {
+            foreach (string card in DeckArray)
+            {
+                Console.WriteLine(card);
+            }
         }
     }
 }
