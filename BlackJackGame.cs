@@ -28,7 +28,7 @@ namespace Blackjack
             // Print het geschudde deck
 
             deck = new Deck(); // Nieuw deck
-            deck.InitializeDeck(); // Initialiseren
+            deck.InitializeDeck(); // Initialiserenn
             deck.ShuffleDeck(); // Schudden
             Console.WriteLine("Shuffled deck:");
             deck.PrintDeck();
