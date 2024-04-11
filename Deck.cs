@@ -37,7 +37,7 @@ namespace Blackjack
                 DeckArray[randIndex] = DeckArray[length];
                 DeckArray[length] = value;
             }
-            Console.WriteLine("Deck has been shuffled.");
+            Console.WriteLine(BoldText("Deck has been shuffled."));
         }
 
         public void PrintDeck()
@@ -46,6 +46,10 @@ namespace Blackjack
             {
                 Console.WriteLine(card);
             }
+        }
+        public string BoldText(string number)
+        {
+            return "\u001b[1m" + number + "\u001b[0m"; // \u001b[1m = Bold, \u001b[0m Verwijderd de stijl
         }
     }
 }

@@ -7,6 +7,13 @@ namespace Blackjack
     {
         private int playerAmount;
         private Deck deck;
+        private List<Player> players;
+        private NameGenerator nameGenerator;
+
+        public BlackjackGame()
+        {
+            nameGenerator = new NameGenerator();
+        }
 
         public void Start()
         {
@@ -16,23 +23,38 @@ namespace Blackjack
             {
                 Console.WriteLine();
                 Console.WriteLine("How many players do you want to play against? (1-4)");
-                string playerAmountInput = Console.ReadLine();
+                string playerAmountInput = Console.ReadLine(); // hoeveel spelers
 
-                isValidInput = ValidatePlayerAmountInput(playerAmountInput);
+                isValidInput = ValidatePlayerAmountInput(playerAmountInput); // heeft dealer 1-4 ingegeven
 
             } while (!isValidInput);
 
-            string[] playerNames = GeneratePlayerNames(playerAmount);
+            players = new List<Player>();
+            for (int i = 0; i < playerAmount; i++)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Enter name for Player {i + 1} {BoldText("Leave blank for a random name.")}");
+                string playerName = Console.ReadLine(); // zelf naam geven
+                while (IsPlayerNameDuplicate(playerName))
+                {
+                    Console.WriteLine("Name already exists. Please enter a different name:");
+                    playerName = Console.ReadLine();
+                }
+
+                players.Add(new Player(playerName != "" ? playerName : null, nameGenerator)); // player object aanmaken
+            }
+
             Console.WriteLine();
-            Console.WriteLine("You are playing against the following " + playerAmount + " Players: " + string.Join(", ", playerNames));
+            Console.WriteLine("You are playing against the following players:");
+            foreach (var player in players)
+            {
+                Console.WriteLine(player.Name);
+            }
             Console.WriteLine();
 
-            // print het geshufflede deck
             deck = new Deck(); // Nieuw deck
             deck.InitializeDeck(); // Initialiseren
             deck.ShuffleDeck(); // shuffelen
-            Console.WriteLine(BoldText("Shuffled deck:"));
-            deck.PrintDeck();
         }
 
         private bool ValidatePlayerAmountInput(string input)
@@ -60,29 +82,22 @@ namespace Blackjack
             return false;
         }
 
-        private string[] GeneratePlayerNames(int playerAmount)
+        private bool IsPlayerNameDuplicate(string name)
         {
-            string[] availableNames = { "Robbert", "Melvin", "Bart", "Erik", "Marco", "Davor", "Niek" };
-            Random rng = new Random();
-            List<string> chosenNames = new List<string>(); // Niet dubbele namen
-            string[] playerNames = new string[playerAmount];
-
-            for (int i = 0; i < playerAmount; i++)
+            foreach (var player in players)
             {
-                int randomIndex;
-                do
+                if (player.Name == name)
                 {
-                    randomIndex = rng.Next(availableNames.Length);
-                } while (chosenNames.Contains(availableNames[randomIndex])); // Kies nieuwe index als die al gekozen is
-
-                playerNames[i] = availableNames[randomIndex];
+                    return true;
+                }
             }
-
-            return playerNames;
+            return false;
         }
-        public string BoldText(int number)
+
+        public string BoldText(string number)
         {
             return "\u001b[1m" + number + "\u001b[0m"; // \u001b[1m = Bold, \u001b[0m Verwijderd de stijl
         }
+
     }
 }
