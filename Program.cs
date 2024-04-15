@@ -14,7 +14,7 @@ namespace Blackjack
             BlackjackGame game = new BlackjackGame();
             game.Start();
 
-            
+
             while (true) // Wachten op invoer van de speler om opnieuw te starten
             {
                 string input = Console.ReadLine();

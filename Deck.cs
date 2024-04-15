@@ -6,6 +6,12 @@ namespace Blackjack
     public class Deck
     {
         private string[] DeckArray { get; set; }
+        private CardValueEvaluator cardValueEvaluator;
+
+        public Deck()
+        {
+            cardValueEvaluator = new CardValueEvaluator();
+        }
 
         public void InitializeDeck()
         {
@@ -38,18 +44,39 @@ namespace Blackjack
                 DeckArray[length] = value;
             }
             Console.WriteLine(BoldText("Deck has been shuffled."));
+            Console.WriteLine("");
         }
 
-        public void PrintDeck()
+        public string DrawCard()
         {
-            foreach (string card in DeckArray)
+            if (DeckArray.Length == 0)
             {
-                Console.WriteLine(card);
+                throw new InvalidOperationException("The deck is empty.");
             }
+
+            string card = DeckArray[0];
+            List<string> tempList = new List<string>(DeckArray);
+            tempList.RemoveAt(0);
+            DeckArray = tempList.ToArray();
+
+            return card;
         }
-        public string BoldText(string number)
+
+        public int EvaluateCardValue(string card)
         {
-            return "\u001b[1m" + number + "\u001b[0m"; // \u001b[1m = Bold, \u001b[0m Verwijderd de stijl
+            string[] splitCard = card.Split(' ');
+            string cardValue = splitCard[0];
+            return cardValueEvaluator.EvaluateCardValue(cardValue);
+        }
+
+        public int AdjustAceValue(int currentValue)
+        {
+            return cardValueEvaluator.AdjustAceValue(currentValue);
+        }
+
+        private string BoldText(string text)
+        {
+            return "\u001b[1m" + text + "\u001b[0m"; // Bold style
         }
     }
 }
