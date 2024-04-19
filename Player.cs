@@ -5,38 +5,45 @@ namespace Blackjack
 {
     public class Player
     {
+        // Naam van players
         public string Name { get; private set; }
-        private List<string> hand;
-        private Random random;
-        public int BetAmount { get; private set; } // Gokbedrag
+
+        // bet van players
+        public int BetAmount { get; private set; }
+
+        private List<string> hand; // Hand van de players
+        private Random random; // Wordt gebruikt voor het genereren van random waarden
 
         public Player(string name = null, NameGenerator nameGenerator = null)
         {
+            // Als er geen naam is opgegeven, wordt er een willekeurige naam gegenereerd met namegenerator
             if (string.IsNullOrEmpty(name))
             {
                 if (nameGenerator == null)
                 {
-                    throw new ArgumentNullException(nameof(nameGenerator));
+                    throw new ArgumentNullException(nameof(nameGenerator), "Naamgenerator kan niet null zijn wanneer er geen naam is opgegeven.");
                 }
-                Name = nameGenerator.GenerateRandomName();
+                Name = nameGenerator.GenerateRandomName(); // Genereert een random naam
             }
             else
             {
                 Name = name;
             }
 
-            hand = new List<string>();
-            random = new Random();
+            hand = new List<string>(); // add de hand van de speler
+            random = new Random(); // add de wilekeurige getallengenerator
 
-            // Willekeurig gokbedrag tussen 30 en 10000 euro
-            BetAmount = random.Next(30, 10001);
+            // Willekeurig bet tussen 10 en 10000 euro
+            BetAmount = random.Next(10, 10001);
         }
 
+        // Add kaart aan hand
         public void ReceiveCard(string card)
         {
             hand.Add(card);
         }
 
+        // Print hand
         public void PrintHand()
         {
             foreach (var card in hand)
@@ -45,16 +52,18 @@ namespace Blackjack
             }
         }
 
+        // Geeft true terug als de speler een extra kaart wil, anders false
         public bool WantsToHit()
         {
-            // Simulate a random decision whether the player wants to hit or stand
-            return random.Next(2) == 0; // 50% chance of hitting
+            // random of speler hit of past (50% kans)
+            return random.Next(2) == 0;
         }
 
+        // Geeft true terug als de speler kiest om te dubbelen of splitsen, anders false.
         public bool RandomDecision()
         {
-            // Willekeurig beslissen tussen "Passen", "Dubbelen" of "Splitsen"
-            int decision = random.Next(1, 4); // Genereer een willekeurig getal tussen 1 en 3
+            // random beslissing tussen "Passen", "Dubbelen" of "Splitsen"
+            int decision = random.Next(1, 4); // random nummer tussen 1 en 3 
 
             switch (decision)
             {
@@ -69,10 +78,11 @@ namespace Blackjack
                     return true; // Speler splitst
                 default:
                     Console.WriteLine($"{Name} past.");
-                    return false; // Als er iets misgaat, past de speler standaard
+                    return false; // Standaard pas als er iets mis gaat
             }
         }
 
+        // Berekende waarde van de hand van speler
         public int GetHandValue()
         {
             int value = 0;
@@ -98,7 +108,7 @@ namespace Blackjack
                 }
             }
 
-            // Adjust the value if there are aces and the total value is over 21
+            // Past de waarde van A's aan indien nodig
             while (value > 21 && numberOfAces > 0)
             {
                 value -= 10;

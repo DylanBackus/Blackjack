@@ -15,7 +15,7 @@ namespace Blackjack
             game.Start();
 
 
-            while (true) // Wachten op invoer van de speler om opnieuw te starten
+            while (true) // Wachten op input van dealer om opnieuw te starten
             {
                 string input = Console.ReadLine();
 

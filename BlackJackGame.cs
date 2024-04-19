@@ -5,31 +5,35 @@ namespace Blackjack
 {
     public class BlackjackGame
     {
-        private readonly Deck deck;
-        private readonly List<Player> players;
-        private readonly NameGenerator nameGenerator;
+        private readonly Deck deck; //waarde kan niet worden veranderd
+        private readonly List<Player> players; 
+        private readonly NameGenerator nameGenerator; 
         private Dealer dealer;
 
         public BlackjackGame()
         {
             nameGenerator = new NameGenerator();
-            deck = new Deck();
-            players = new List<Player>();
+            deck = new Deck(); // maakt deck
+            players = new List<Player>(); // list van spelers
         }
 
+        // Start het blackjackspel.
         public void Start()
         {
-            int playerAmount = GetNumberOfPlayers();
-            CreatePlayers(playerAmount);
-            CreateDealer();
-            PrintPlayerNames();
-            deck.InitializeDeck();
-            deck.ShuffleDeck();
-            DealInitialCards();
-            PrintPlayerCards();
-            Console.WriteLine(BoldText("Dealer's Cards:"));
-            dealer.PrintCards();
-            DealerAction();
+            int playerAmount = GetNumberOfPlayers(); 
+            CreatePlayers(playerAmount); 
+            CreateDealer(); 
+            PrintPlayerNames(); 
+            deck.InitializeDeck(); 
+            deck.ShuffleDeck(); 
+            DealInitialCards(); 
+            PrintPlayerCards(); 
+            Console.WriteLine(BoldText("Dealer's Cards:")); 
+            dealer.PrintFirstCard(); 
+            DealerAction(); 
+            GameResult gameResult = new GameResult(dealer, players); 
+            gameResult.PrintDealerCards();
+            gameResult.DetermineWinner(); 
         }
 
         private int GetNumberOfPlayers()
@@ -37,10 +41,10 @@ namespace Blackjack
             while (true)
             {
                 Console.WriteLine();
-                Console.WriteLine("How many players do you want to play against? (1-4)");
+                Console.WriteLine("Hoeveel spelers wil je tegen spelen? (1-4)");
                 string playerAmountInput = Console.ReadLine();
 
-                if (int.TryParse(playerAmountInput, out int playerAmount))
+                if (int.TryParse(playerAmountInput, out int playerAmount)) // controleren of input goed is
                 {
                     if (playerAmount >= 1 && playerAmount <= 4)
                     {
@@ -49,30 +53,31 @@ namespace Blackjack
                     else
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Please enter a number between 1 and 4.");
+                        Console.WriteLine("Voer a.u.b. een nummer tussen 1 en 4 in.");
                         Console.ResetColor();
                     }
                 }
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid input. Please enter a valid number.");
+                    Console.WriteLine("Ongeldige invoer. Voer a.u.b. een geldig nummer in.");
                     Console.ResetColor();
                 }
             }
         }
 
+        // Creëert de spelers gebaseert op input
         private void CreatePlayers(int playerAmount)
         {
             for (int i = 0; i < playerAmount; i++)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Enter name for Player {i + 1} {BoldText("Leave blank for a random name.")}");
+                Console.WriteLine($"Voer de naam in voor Speler {i + 1} {BoldText("Laat leeg voor een willekeurige naam.")}");
                 string playerName = Console.ReadLine();
                 while (IsPlayerNameDuplicate(playerName))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Name already exists. Please enter a different name:");
+                    Console.WriteLine("Naam bestaat al. Voer a.u.b. een andere naam in:");
                     Console.ResetColor();
                     playerName = Console.ReadLine();
                 }
@@ -86,13 +91,14 @@ namespace Blackjack
             dealer = new Dealer("Dealer");
         }
 
+        // Print namen van players en bet enz
         private void PrintPlayerNames()
         {
             Console.WriteLine();
-            Console.WriteLine("You are playing against the following players:");
+            Console.WriteLine("Je speelt tegen de volgende spelers:");
             foreach (var player in players)
             {
-                Console.WriteLine($"{player.Name} - Bet: {player.BetAmount} euro");
+                Console.WriteLine($"{player.Name} - Inzet: {player.BetAmount} euro");
             }
             Console.WriteLine();
         }
@@ -105,17 +111,18 @@ namespace Blackjack
                 player.ReceiveCard(deck.DrawCard());
             }
 
-            dealer.ReceiveCard(deck.DrawCard(), true); // Face up card
-            dealer.ReceiveCard(deck.DrawCard(), false); // Face down card
+            dealer.ReceiveCard(deck.DrawCard(), true); // eerste kaart (face up)
+            dealer.ReceiveCard(deck.DrawCard(), false); // tweede kaart (face down)
         }
 
+        // Drukt de kaarten van de spelers af
         private void PrintPlayerCards()
         {
             foreach (var player in players)
             {
                 Console.WriteLine("");
-                Console.WriteLine(BoldText($"{player.Name}'s Cards:"));
-                Console.WriteLine($"{player.Name} - Bet: {player.BetAmount} euro");
+                Console.WriteLine(BoldText($"{player.Name}'s Kaarten:"));
+                Console.WriteLine($"{player.Name} - Inzet: {player.BetAmount} euro");
                 player.PrintHand();
                 Console.WriteLine();
             }
@@ -123,39 +130,34 @@ namespace Blackjack
 
         private void DealerAction()
         {
-            while (dealer.ShouldHit())
-            {
-                dealer.ReceiveCard(deck.DrawCard(), true);
-                Console.WriteLine("Dealer takes another card.");
-            }
-
-            Console.WriteLine("Dealer stands.");
-            Console.WriteLine("Dealer's Cards:");
-            dealer.PrintCards();
-            Console.WriteLine($"Dealer's Hand Value: {dealer.GetHandValue()}");
-            Console.WriteLine("");
-
-
-            // Players take random decisions to hit or stand
+            // Spelers neemt random beslissingen om kaarten te nemen of te passen
             foreach (var player in players)
             {
                 while (player.RandomDecision())
                 {
                     player.ReceiveCard(deck.DrawCard());
-                    Console.WriteLine($"{player.Name} takes another card.");
+                    Console.WriteLine($"{player.Name} neemt nog een kaart.");
                     PrintPlayerCards();
                     if (player.GetHandValue() > 21)
                     {
-                        Console.WriteLine($"{player.Name} busted!");
+                        Console.WriteLine($"{player.Name} heeft verloren!");
                         break;
                     }
                 }
-                Console.WriteLine($"{player.Name} stands.");
+                Console.WriteLine($"{player.Name} past.");
             }
-            GameResult resultManager = new GameResult(dealer, players);
-            resultManager.DetermineWinner();
+
+            // Handelingen van de dealer
+            Console.WriteLine("\nBeurt van de dealer:");
+            while (dealer.GetHandValue() < 17)
+            {
+                Console.WriteLine("Dealer neemt een kaart.");
+                dealer.ReceiveCard(deck.DrawCard(), true);
+            }
+            Console.WriteLine("Dealer past.\n");
         }
 
+        // Controleert of de geinpute playername al bestaat
         private bool IsPlayerNameDuplicate(string name)
         {
             foreach (var player in players)
@@ -170,10 +172,7 @@ namespace Blackjack
 
         private string BoldText(string text)
         {
-            return "\u001b[1m" + text + "\u001b[0m"; // \u001b[1m = Bold, \u001b[0m removes the style
+            return "\u001b[1m" + text + "\u001b[0m"; // Bold
         }
     }
 }
-
-// 17 aan het begin
-// Cards aanmaken
