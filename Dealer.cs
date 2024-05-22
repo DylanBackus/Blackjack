@@ -33,7 +33,7 @@ namespace Blackjack
             Console.WriteLine($"Eerste kaart van de dealer: {hand[0]}");
         }
 
-        // Neemt kaarten voor de dealer van het deck tot waarde van de hand 17 of meer is
+        // Neemt kaarten voor de dealer van het deck tot waarde van de hand 17 of meer is.,
         public void TakeCards(Deck deck)
         {
             while (GetHandValue() < 17)
